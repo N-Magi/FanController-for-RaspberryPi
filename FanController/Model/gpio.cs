@@ -15,7 +15,7 @@ namespace FanController.Model
         /// <param name="enable">出力を行うかどうか</param>
         static public void PinMode(int BCMpin, pin_mode mode, bool enable = true)
         {
-            string gpioPin_d = $@"/sys/class/gpio/gpio{BCMpin}";
+            string gpioPin_d  = $@"/sys/class/gpio/gpio{BCMpin}";
             CheckPinAvailable(BCMpin, pin_type.GPIO, true);
             //ピンのステータスを設定する。
             SetState($@"{gpioPin_d}/direction", Enum.GetName(typeof(pin_mode), mode).ToLower());

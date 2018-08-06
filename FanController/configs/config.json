@@ -1,0 +1,15 @@
+﻿{
+
+  "PinSettings": {
+    "LogicPin": 26,
+    "PwmPin": 1
+  },
+  "FanSpeedSettings": {
+    "MaxSpeed": 100,
+    "MinSpeed": 50
+  },
+  "TemperatureSettings": {
+    "MaxSpeedTemp": 70,
+    "MinSpeedTemp": 0
+  }
+}
