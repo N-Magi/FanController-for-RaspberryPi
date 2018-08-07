@@ -14,13 +14,16 @@ namespace FanController
 
         static void Main(string[] args)
         {
+            //Console.WriteLine(Environment.CurrentDirectory);
+
             config = configs.Configuration.GetConfiguration();
 
             HWlogger = new Model.Logger(@"/var/log/FanController","HWstatus.csv");
             FanLogger = new Model.Logger(@"/var/log/FanController","log.log");
 
             
-            Console.WriteLine("a");
+            
+            //Console.WriteLine("a");
 
             var pinSection = config.GetSection("PinSettings");
             int logicPin = int.Parse(pinSection["LogicPin"]);
@@ -101,13 +104,10 @@ namespace FanController
             if (!float.TryParse(File.ReadAllText("/sys/class/thermal/thermal_zone0/temp"), out temp)) return;
             temp = temp / 1000;
             count++;
-            if (count % 20 == 0)
-            {
-                Console.WriteLine(temp);
-            }
+            
             
             float perTemp = (temp - minTemp) / (maxTemp - minTemp);
-            Console.WriteLine(perTemp);
+            //Console.WriteLine(perTemp);
             float perSpeed = minSpeed + ((maxSpeed - minSpeed) * perTemp);
             
 

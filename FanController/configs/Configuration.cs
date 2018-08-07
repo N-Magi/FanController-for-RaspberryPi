@@ -14,9 +14,9 @@ namespace FanController.configs
 
             var configBuilder = new ConfigurationBuilder();
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-
+            if (!File.Exists($@"{path}/config.json")) File.Copy($@"{Environment.CurrentDirectory}/config.json",$@"{path}/config.json",false);
             configBuilder.SetBasePath(path);
-            Console.WriteLine(Directory.GetCurrentDirectory());
+            //Console.WriteLine(Directory.GetCurrentDirectory());
             configBuilder.AddJsonFile(@"config.json");
 
             return configBuilder.Build();
