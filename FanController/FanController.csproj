@@ -26,6 +26,6 @@
     </None>
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties Config_4Config_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties Config_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>
