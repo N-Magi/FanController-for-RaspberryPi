@@ -23,7 +23,7 @@ this program written by C# (dotnetCore) so you must install that
 * HardWear Logfile have CPUtemprature and FanSpeed
 
 ## 5. Using HardWear components
-* ` TA7291P `(Toshiba)
+* [` TA7291P `](https://toshiba.semicon-storage.com/info/docget.jsp?did=16127&prodName=TA7291P)
     * Using Pin list
 
     | PIN | GPIO PIN| PWM PIN| FOR|
