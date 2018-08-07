@@ -11,5 +11,8 @@
   "TemperatureSettings": {
     "MaxSpeedTemp": 70,
     "MinSpeedTemp": 0
+  },
+  "LoopSettings": {
+    "SleepTime": 2
   }
 }

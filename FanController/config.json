@@ -1,6 +1,4 @@
-﻿
-{
-
+﻿{
   "PinSettings": {
     "LogicPin": 26,
     "PwmPin": 1
@@ -12,5 +10,8 @@
   "TemperatureSettings": {
     "MaxSpeedTemp": 70,
     "MinSpeedTemp": 0
+  },
+  "LoopSettings": {
+    "SleepTime": 2
   }
 }

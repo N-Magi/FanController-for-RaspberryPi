@@ -120,7 +120,7 @@ namespace FanController
 
             Model.PWM pwm = new Model.PWM(100, (int)perSpeed);
             Model.GPIO.PinMode(int.Parse(config["PinSettings:PwmPin"]), pwm, true);
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(int.Parse(config["LoopSettings:SleepTime"]) * 1000);
         }
 
 
