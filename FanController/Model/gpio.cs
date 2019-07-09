@@ -65,7 +65,7 @@ namespace FanController.Model
 
             string pin_d = $@"/sys/class/";
             //書き込むのがPWMかGPIOか判定を行う
-            pin_d = type == pin_type.GPIO ? $@"{pin_d}/gpio/gpio{BCMpin}" : $@"{pin_d}/pwm/pwm{BCMpin}";
+            pin_d = type == pin_type.GPIO ? $@"{pin_d}/gpio/gpio{BCMpin}" : $@"{pin_d}/pwm/pwmchip0/pwm{BCMpin}";
             //string gpioPin_d = $@"/sys/class/gpio/gpio{BCMpin}";
             SetState($@"{pin_d}/{file}", value.ToString());
 
@@ -97,7 +97,7 @@ namespace FanController.Model
             }
 
             //PWMのピンが有効かされているかを確認する。
-            string pwm_d = $@"/sys/class/pwm/pwm{BCMpin}";
+            string pwm_d = $@"/sys/class/pwm/pwmchip0/pwm{BCMpin}";
             bool isAvctivated = false;
             isAvctivated = Directory.Exists(pwm_d);
             //PWMが有効化されていなかったら有効化

@@ -85,45 +85,26 @@ namespace FanController
 
         static void loop()
         {
-            /*
-            var SpeedSet = config.GetSection("FanSpeedSettings");
-            var tempSet = config.GetSection("TemperatureSettings");
-
-            int maxSpeed = 100;
-            if (!int.TryParse(SpeedSet["MaxSpeed"], out maxSpeed)) return;
-            int minSpeed = 0;
-            if (!int.TryParse(SpeedSet["MinSpeed"], out minSpeed)) return;
-
-            int minTemp = 40;
-            if (!int.TryParse(tempSet["MinSpeedTemp"], out minTemp)) return;
-            int maxTemp = 55;
-            if (!int.TryParse(tempSet["MaxSpeedTemp"], out maxTemp)) return;
-
-            */
-
+            
             float temp = 0;
             float perSpeed = 100;
             float cpuUsage = 50;
 
-            if (_config.EnabledCpuUsage == true)
-            {
-                //var counter = new System.Diagnostics.PerformanceCounter("Processor", "% Processor Time", "_Total");
-                //cpuUsage = counter.NextValue();
-
-
-                //perSpeed = _config.MinSpeed + ((_config.MaxSpeed - _config.MinSpeed) * (cpuUsage / 100.0f));
-            }
             if (_config.EnabledCpuTemp == true)
             {
                 if (!float.TryParse(File.ReadAllText("/sys/class/thermal/thermal_zone0/temp"), out temp)) return;
                 temp = temp / 1000;
 
-                float perTemp = (temp - _config.MinSpeedTemp) / (_config.MaxSpeedTemp - _config.MinSpeedTemp);
-                perSpeed = _config.MinSpeed + ((_config.MaxSpeed - _config.MinSpeed) * perTemp);
+                //perSpeed = _config.MaxSpeed == _config.MinSpeed ? _config.MaxSpeed : _config.MinSpeed;
+                if (_config.MaxSpeedTemp != _config.MinSpeedTemp)
+                {
+                    float perTemp = (temp - _config.MinSpeedTemp) / (_config.MaxSpeedTemp - _config.MinSpeedTemp);
+                    perSpeed = _config.MinSpeed + ((_config.MaxSpeed - _config.MinSpeed) * perTemp);
 
-                if (perTemp >= 1) perSpeed = _config.MaxSpeed;
-                if (perTemp <= 0) perSpeed = _config.MaxSpeed > _config.MinSpeed ? _config.MaxSpeed : _config.MinSpeed;
-                perSpeed = _config.MaxSpeed == _config.MinSpeed ? _config.MaxSpeed : _config.MinSpeed;
+                    if (perTemp >= 1) perSpeed = _config.MaxSpeed;
+                    if (perTemp <= 0) perSpeed = _config.MaxSpeed > _config.MinSpeed ? _config.MaxSpeed : _config.MinSpeed;
+                }
+                
             }
 
             HWlogger.PrintCSV($"{temp.ToString().PadRight(8)},{cpuUsage.ToString().PadRight(8)}  , {perSpeed.ToString().PadRight(9)}");
