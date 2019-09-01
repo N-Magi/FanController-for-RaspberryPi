@@ -1,119 +1,58 @@
-﻿using System;
-using Microsoft.Extensions.Configuration;
+﻿using FanController.Gpio;
+using System;
 using System.IO;
+using System.Threading;
 
 namespace FanController
 {
-    class Program
-    {
+	class Program
+	{
+		static void Main()
+		{
+			var _config = new configs.config(configs.Configuration.GetConfiguration());
 
-        static configs.config _config;
-        static Model.Logger HWlogger = null;
-        static Model.Logger FanLogger = null;
-        //static Model.PWM pwm;
+			Console.WriteLine("Starting... RaspiFanController StartingSettings is...");
+			Console.WriteLine($"PwmPin :{_config.PWMPin} GpioLogicPin: {_config.LogicPin}");
 
-        static void Main(string[] args)
-        {
-            //Console.WriteLine(Environment.CurrentDirectory);
-            _config = new configs.config(configs.Configuration.GetConfiguration());
+			Console.WriteLine("\n**FanSpeedSettings");
+			Console.WriteLine($"*Frequency: {_config.PwmFrequency}Hz	FanMaxSpeed: {_config.MaxSpeed}%  FanMinSpeed: {_config.MinSpeed}%");
+			Console.WriteLine($"*FanMaxTemp:{_config.MaxSpeedTemp}C	FanMinTemp: {_config.MinSpeedTemp}C");
 
-            HWlogger = new Model.Logger(@"/var/log/FanController", "HWstatus.csv");
-            FanLogger = new Model.Logger(@"/var/log/FanController", "log.log");
+			using (var logicPin = new DigitalPin(_config.LogicPin, GpioPinDirection.Out))
+			using (var pwmPin = new PwmPin(_config.PWMPin, _config.PwmFrequency, 1))
+			{
+				Console.CancelKeyPress += (s, e) =>
+				{
+					Console.WriteLine("終了中...");
+					logicPin.Dispose();
+					pwmPin.Dispose();
+				};
+				logicPin.State = true;
+				Thread.Sleep(3000);
 
+				while (true)
+				{
+					float perSpeed = 1;
 
-            //Console.WriteLine("a");
-            /*
-            var pinSection = config.GetSection("PinSettings");
-            int logicPin = int.Parse(pinSection["LogicPin"]);
-            int pwmPin = int.Parse(config["PinSettings:PwmPin"]);
-            var SpeedSet = config.GetSection("FanSpeedSettings");
-            var tempSet = config.GetSection("TemperatureSettings");
-            
-            int maxSpeed = 100;
-            if (!int.TryParse(SpeedSet["MaxSpeed"], out maxSpeed)) return;
-            int minSpeed = 0;
-            if (!int.TryParse(SpeedSet["MinSpeed"], out minSpeed)) return;
+					if (!float.TryParse(File.ReadAllText("/sys/class/thermal/thermal_zone0/temp"), out float temp)) return;
+					temp /= 1000;
 
-            int minTemp = 40;
-            if (!int.TryParse(tempSet["MinSpeedTemp"], out minTemp)) return;
-            int maxTemp = 55;
-            if (!int.TryParse(tempSet["MaxSpeedTemp"], out maxTemp)) return;
+					if (_config.MaxSpeedTemp != _config.MinSpeedTemp)
+					{
+						float perTemp = (temp - _config.MinSpeedTemp) / (_config.MaxSpeedTemp - _config.MinSpeedTemp);
+						perSpeed = (_config.MinSpeed + ((_config.MaxSpeed - _config.MinSpeed) * perTemp)) / 100;
 
-            */
+						if (perTemp >= 1) perSpeed = _config.MaxSpeed;
+						if (perTemp <= 0) perSpeed = _config.MaxSpeed > _config.MinSpeed ? _config.MaxSpeed : _config.MinSpeed;
+					}
 
+					perSpeed = Math.Min(Math.Max(perSpeed, 0), 1);
 
-
-            FanLogger.Print("Starting... RaspiFanController StartingSettings is...");
-            FanLogger.Print($@"PwmPin :{_config.PWMPin} GpioLogicPin: {_config.LogicPin}");
-
-            FanLogger.Print("Load... FanSpeedSettings");
-            FanLogger.Print($"Frequency Is {_config.PwmFrequency}Hz	FanMaxSpeed Is {_config.MaxSpeed}  FanMinSpeed Is {_config.MinSpeed}");
-            if (_config.EnabledCpuTemp == true)
-                FanLogger.Print($"FanMaxTemp Is {_config.MaxSpeedTemp} FanMinTemp Is {_config.MinSpeedTemp}");
-            if (_config.EnabledCpuUsage == true)
-                FanLogger.Print($"FanMaxUsage Is {_config.MaxSpeedUsage} FanMinUsage Is {_config.MinSpeedUsage}");
-
-
-            Boot();
-            if (args.Length <= 0)
-            {
-                while (true)
-                {
-                    loop();
-                }
-            }
-
-            int duty = 0;
-            if (!int.TryParse(args[0], out duty)) return;
-
-            Model.PWM pwm = new Model.PWM(_config.PwmFrequency, duty);
-            Model.GPIO.PinMode(_config.PWMPin, pwm, true);
-
-        }
-
-        static void Boot()
-        {
-            //var pinSection = config.GetSection("PinSettings");
-
-
-            Model.PWM pwm = new Model.PWM(_config.PwmFrequency, 100);//回転のスターター
-            Model.GPIO.PinMode(_config.LogicPin, Model.pin_mode.OUT, true);
-            Model.GPIO.PinMode(_config.PWMPin, pwm, true);
-
-
-        }
-
-        static void loop()
-        {
-            
-            float temp = 0;
-            float perSpeed = 100;
-            float cpuUsage = 50;
-
-            if (_config.EnabledCpuTemp == true)
-            {
-                if (!float.TryParse(File.ReadAllText("/sys/class/thermal/thermal_zone0/temp"), out temp)) return;
-                temp = temp / 1000;
-
-                //perSpeed = _config.MaxSpeed == _config.MinSpeed ? _config.MaxSpeed : _config.MinSpeed;
-                if (_config.MaxSpeedTemp != _config.MinSpeedTemp)
-                {
-                    float perTemp = (temp - _config.MinSpeedTemp) / (_config.MaxSpeedTemp - _config.MinSpeedTemp);
-                    perSpeed = _config.MinSpeed + ((_config.MaxSpeed - _config.MinSpeed) * perTemp);
-
-                    if (perTemp >= 1) perSpeed = _config.MaxSpeed;
-                    if (perTemp <= 0) perSpeed = _config.MaxSpeed > _config.MinSpeed ? _config.MaxSpeed : _config.MinSpeed;
-                }
-                
-            }
-
-            HWlogger.PrintCSV($"{temp.ToString().PadRight(8)},{cpuUsage.ToString().PadRight(8)}  , {perSpeed.ToString().PadRight(9)}");
-
-            Model.PWM pwm = new Model.PWM(_config.PwmFrequency, (int)perSpeed);
-            Model.GPIO.PinMode(_config.PWMPin, pwm, true);
-            System.Threading.Thread.Sleep(_config.GetStatePeriod * 1000);
-        }
-
-
-    }
+					Console.WriteLine($"[{DateTime.Now:yyyy/mm/dd HH:MM:ss}] Temp: {temp}C, Spd: {perSpeed * 100}%");
+					pwmPin.Duty = perSpeed;
+					Thread.Sleep(_config.GetStatePeriod * 1000);
+				}
+			}
+		}
+	}
 }

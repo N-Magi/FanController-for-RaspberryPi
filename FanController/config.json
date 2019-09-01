@@ -4,7 +4,7 @@
     "PwmPin": 1
   },
   "FanSpeedSettings": {
-    "PwmFrequecy": 100,
+    "PwmFrequency": 10000,
     "MaxSpeed": 100,
     "MinSpeed": 50
   },
@@ -15,10 +15,5 @@
   },
   "LoopSettings": {
     "SleepTime": 2
-  },
-  "CpuLoadSettings": {
-    "EnabledCPULoad": false,
-    "MaxSpeedCpuUsage": 90,
-    "MinSpeedCpuUsage": 0
   }
 }
