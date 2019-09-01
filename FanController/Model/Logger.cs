@@ -24,12 +24,12 @@ namespace FanController.Model
             Path = $@"{dirPah}/{fileName}";
             DirPath = dirPah;
 
-            if (!Directory.Exists(DirPath)) Directory.CreateDirectory(DirPath);
+            //if (!Directory.Exists(DirPath)) Directory.CreateDirectory(DirPath);
             //var dir = new DirectoryInfo(dirPah);
             //dir.Attributes = dir.Attributes & ~FileAttributes.ReadOnly;
             //Console.WriteLine(dirPah);
             //Console.WriteLine(path);
-            if (!File.Exists(Path)) File.Create(path);
+            //if (!File.Exists(Path)) File.Create(path);
             //Console.WriteLine(path);
         }
 
@@ -37,26 +37,27 @@ namespace FanController.Model
         {
             if (Path == null) return;
 
-            using (StreamWriter sw = new StreamWriter(Path, true))
-            {
-                DateTime time = DateTime.Now;
-                string message = $@"[{time.ToString("yyyy/MM/dd")} - {time.ToString("HH:mm:ss")}] {msg}";
-                sw.WriteLine(message);
-                sw.Flush();
-            }
+			Console.WriteLine($@"[{DateTime.Now.ToString("yyyy/MM/dd")} - {DateTime.Now.ToString("HH:mm:ss")}] {msg}");
+            //using (StreamWriter sw = new StreamWriter(Path, true))
+            //{
+            //    DateTime time = DateTime.Now;
+            //    string message = $@"[{time.ToString("yyyy/MM/dd")} - {time.ToString("HH:mm:ss")}] {msg}";
+            //    sw.WriteLine(message);
+            //    sw.Flush();
+            //}
         }
 
-        public void PrintCSV(string data)
-        {
-            if (Path == null) return;
+        //public void PrintCSV(string data)
+        //{
+        //    if (Path == null) return;
 
-            using (StreamWriter sw = new StreamWriter(Path, true))
-            {
-                DateTime time = DateTime.Now;
-                string message = $@"{time.ToString("yyyy/MM/dd")} - {time.ToString("HH:mm:ss")}   ,{data}";
-                sw.WriteLine(message);
-                sw.Flush();
-            }
-        }
+        //    using (StreamWriter sw = new StreamWriter(Path, true))
+        //    {
+        //        DateTime time = DateTime.Now;
+        //        string message = $@"{time.ToString("yyyy/MM/dd")} - {time.ToString("HH:mm:ss")}   ,{data}";
+        //        sw.WriteLine(message);
+        //        sw.Flush();
+        //    }
+        //}
     }
 }

@@ -14,13 +14,8 @@ namespace FanController.configs
 		public int MaxSpeed { get; set; } = 100;
         public int MinSpeed { get; set; } = 50;
 
-        public bool EnabledCpuTemp { get; set; } = true;
         public int MaxSpeedTemp { get; set; } = 70;
         public int MinSpeedTemp { get; set; } = 0;
-
-        public bool EnabledCpuUsage { get; set; } = false;
-        public int MaxSpeedUsage { get; set; } = 90;
-        public int MinSpeedUsage { get; set; } = 0;
 
         public int GetStatePeriod { get; set; } = 2;
 
@@ -31,49 +26,26 @@ namespace FanController.configs
         {
             _cofig = config;
 
-            LogicPin = (int)GetConfig<int>("PinSettings:LogicPin");
-            PWMPin = (int)GetConfig<int>("PinSettings:PwmPin");
+            LogicPin = GetConfig<int>("PinSettings:LogicPin");
+            PWMPin = GetConfig<int>("PinSettings:PwmPin");
 
 			PwmFrequency = GetConfig<int>("FanSpeedSettings:PwmFrequency");
-            MaxSpeed = (int)GetConfig<int>("FanSpeedSettings:MaxSpeed");
-            MinSpeed = (int)GetConfig<int>("FanSpeedSettings:MinSpeed");
+            MaxSpeed = GetConfig<int>("FanSpeedSettings:MaxSpeed");
+            MinSpeed = GetConfig<int>("FanSpeedSettings:MinSpeed");
 
-            EnabledCpuTemp = GetConfig<bool>("TemperatureSettings:EnabledCpuTemp") == 1 ? true : false;
-            MaxSpeedTemp = (int)GetConfig<int>("TemperatureSettings:MaxSpeedTemp");
-            MinSpeedTemp = (int)GetConfig<int>("TemperatureSettings:MinSpeedTemp");
+            MaxSpeedTemp = GetConfig<int>("TemperatureSettings:MaxSpeedTemp");
+            MinSpeedTemp = GetConfig<int>("TemperatureSettings:MinSpeedTemp");
 
-            GetStatePeriod = (int)GetConfig<int>("LoopSettings:SleepTime");
-
-            EnabledCpuUsage = GetConfig<bool>("CpuLoadSettings:EnabledCPULoad") == 1 ? true : false;
-            MaxSpeedUsage = (int)GetConfig<int>("CpuLoadSettings:MaxSpeedCpuUsage");
-            MinSpeedUsage = (int)GetConfig<int>("CpuLoadSettings:MinSpeedCpuUsage");
-
-
+            GetStatePeriod = GetConfig<int>("LoopSettings:SleepTime");
         }
 
         public int GetConfig<type>(string configSet)
         {
             if (typeof(int) == typeof(type))
-            {
-                int result = 0;
-                if (int.TryParse(_cofig[configSet], out result)) return result;
-            }
-
-            /*  if(typeof(string) == typeof(type))
-              {
-                  //string result = "";
-                  return _cofig[configSet];
-              }
-              */
+				if (int.TryParse(_cofig[configSet], out int result)) return result;
             if (typeof(bool) == typeof(type))
-            {
-                bool result = false;
-                if (bool.TryParse(_cofig[configSet], out result))
-                {
+				if (bool.TryParse(_cofig[configSet], out bool result))
                     return result == true ? 1 : 0;
-                }
-            }
-
             return 1;
         }
     }

@@ -5,6 +5,7 @@ using System.IO;
 
 namespace FanController.Model
 {
+	[Obsolete]
     static class GPIO
     {
         /// <summary>
@@ -156,7 +157,8 @@ namespace FanController.Model
 
     }
 
-    public class PWM
+	[Obsolete]
+	public class PWM
     {
         /// <summary>
         /// PWMの設定
