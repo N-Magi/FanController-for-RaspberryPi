@@ -11,15 +11,12 @@ namespace FanController
 		{
 			var _config = new configs.config(configs.Configuration.GetConfiguration());
 
-			var HWlogger = new Model.Logger(@"/var/log/FanController", "HWstatus.csv");
-			var FanLogger = new Model.Logger(@"/var/log/FanController", "log.log");
+			Console.WriteLine("Starting... RaspiFanController StartingSettings is...");
+			Console.WriteLine($"PwmPin :{_config.PWMPin} GpioLogicPin: {_config.LogicPin}");
 
-			FanLogger.Print("Starting... RaspiFanController StartingSettings is...");
-			FanLogger.Print($@"PwmPin :{_config.PWMPin} GpioLogicPin: {_config.LogicPin}");
-
-			FanLogger.Print("Load... FanSpeedSettings");
-			FanLogger.Print($"Frequency Is {_config.PwmFrequency}Hz	FanMaxSpeed Is {_config.MaxSpeed}  FanMinSpeed Is {_config.MinSpeed}");
-			FanLogger.Print($"FanMaxTemp Is {_config.MaxSpeedTemp} FanMinTemp Is {_config.MinSpeedTemp}");
+			Console.WriteLine("\n**FanSpeedSettings");
+			Console.WriteLine($"*Frequency: {_config.PwmFrequency}Hz	FanMaxSpeed: {_config.MaxSpeed}%  FanMinSpeed: {_config.MinSpeed}%");
+			Console.WriteLine($"*FanMaxTemp:{_config.MaxSpeedTemp}C	FanMinTemp: {_config.MinSpeedTemp}C");
 
 			using (var logicPin = new DigitalPin(_config.LogicPin, GpioPinDirection.Out))
 			using (var pwmPin = new PwmPin(_config.PWMPin, _config.PwmFrequency, 1))
@@ -51,7 +48,7 @@ namespace FanController
 
 					perSpeed = Math.Min(Math.Max(perSpeed, 0), 1);
 
-					HWlogger.Print($"Temp: {temp}C, Spd: {perSpeed * 100}%");
+					Console.WriteLine($"[{DateTime.Now:yyyy/mm/dd HH:MM:ss}] Temp: {temp}C, Spd: {perSpeed * 100}%");
 					pwmPin.Duty = perSpeed;
 					Thread.Sleep(_config.GetStatePeriod * 1000);
 				}
