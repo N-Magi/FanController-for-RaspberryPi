@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace FanController.Gpio
 {
@@ -29,8 +27,8 @@ namespace FanController.Gpio
 				_frequency = value;
 				Period = (int)(1000000000 / value);
 
-				Write(BaseDirectory + "/duty_cycle", ((int)(Period * Duty)).ToString());
 				Write(BaseDirectory + "/period", Period.ToString());
+				Write(BaseDirectory + "/duty_cycle", ((int)(Period * Duty)).ToString());
 			}
 		}
 		public int Period { get; private set; }
